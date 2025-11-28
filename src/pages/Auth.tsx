@@ -11,10 +11,19 @@ import { useToast } from "@/hooks/use-toast";
 import Logo from "@/components/Logo";
 import healthcareTeam from "@/assets/healthcare-team.jpg";
 import { authService } from "@/services/authService";
+import { useAuth } from "@/hooks/useAuth";
+
+// Hardcoded branches until the branches API is implemented
+const BRANCHES = [
+  { id: 1, branchName: "Main Branch", branchCode: "MAIN-001" },
+  { id: 2, branchName: "Branch 2", branchCode: "BR-002" },
+  { id: 3, branchName: "Branch 3", branchCode: "BR-003" },
+];
 
 const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user, loading, login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -29,22 +38,31 @@ const Auth = () => {
   const [signupFirstName, setSignupFirstName] = useState("");
   const [signupLastName, setSignupLastName] = useState("");
   const [signupPhone, setSignupPhone] = useState("");
-  const [signupBranch, setSignupBranch] = useState("");
+  const [signupBranch, setSignupBranch] = useState<number>(1);
   const [signupRole, setSignupRole] = useState("reception");
 
   useEffect(() => {
     // Check if user is already logged in
-    if (authService.isAuthenticated()) {
+    if (!loading && user) {
       navigate("/dashboard");
     }
-  }, [navigate]);
+  }, [user, loading, navigate]);
+
+  // Show loading while checking auth state
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-muted-foreground">Loading...</div>
+      </div>
+    );
+  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      const response = await authService.login({
+      const response = await login({
         username: loginUsername,
         password: loginPassword,
       });
@@ -95,7 +113,7 @@ const Auth = () => {
       setSignupFirstName("");
       setSignupLastName("");
       setSignupPhone("");
-      setSignupBranch("");
+      setSignupBranch(1);
     } catch (error: any) {
       toast({
         title: "Signup failed",
@@ -282,15 +300,22 @@ const Auth = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="signup-branch">Branch ID *</Label>
-                    <Input
-                      id="signup-branch"
-                      type="text"
-                      value={signupBranch}
-                      onChange={(e) => setSignupBranch(e.target.value)}
-                      placeholder="BRANCH-001"
-                      required
-                    />
+                    <Label htmlFor="signup-branch">Branch *</Label>
+                    <Select
+                      value={signupBranch.toString()}
+                      onValueChange={(value) => setSignupBranch(parseInt(value))}
+                    >
+                      <SelectTrigger id="signup-branch">
+                        <SelectValue placeholder="Select branch" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {BRANCHES.map((branch) => (
+                          <SelectItem key={branch.id} value={branch.id.toString()}>
+                            {branch.branchName} ({branch.branchCode})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   <div className="space-y-2">

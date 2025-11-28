@@ -9,16 +9,17 @@ export const authService = {
    */
   login: async (credentials: LoginRequest): Promise<AuthResponse> => {
     const response = await apiClient.post(`${AUTH_API}/login`, credentials);
-    const data = response.data;
+    // API returns { data: { accessToken, refreshToken, user }, success, message }
+    const authData = response.data.data;
 
     // Store auth data
-    if (data.token) {
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('refreshToken', data.refreshToken);
-      localStorage.setItem('user', JSON.stringify(data.user));
+    if (authData.accessToken) {
+      localStorage.setItem('token', authData.accessToken);
+      localStorage.setItem('refreshToken', authData.refreshToken);
+      localStorage.setItem('user', JSON.stringify(authData.user));
     }
 
-    return data;
+    return authData;
   },
 
   /**
@@ -35,14 +36,15 @@ export const authService = {
   refreshToken: async (): Promise<AuthResponse> => {
     const refreshToken = localStorage.getItem('refreshToken');
     const response = await apiClient.post(`${AUTH_API}/refresh`, { refreshToken });
-    const data = response.data;
+    // API returns { data: { accessToken, ... }, success, message }
+    const authData = response.data.data;
 
     // Update stored token
-    if (data.token) {
-      localStorage.setItem('token', data.token);
+    if (authData.accessToken) {
+      localStorage.setItem('token', authData.accessToken);
     }
 
-    return data;
+    return authData;
   },
 
   /**

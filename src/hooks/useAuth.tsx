@@ -1,11 +1,12 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "@/services/authService";
-import type { User } from "@/types";
+import type { User, LoginRequest, AuthResponse } from "@/types";
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
+  login: (credentials: LoginRequest) => Promise<AuthResponse>;
   signOut: () => void;
 }
 
@@ -23,14 +24,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(false);
   }, []);
 
-  const signOut = () => {
-    authService.logout();
+  const login = async (credentials: LoginRequest): Promise<AuthResponse> => {
+    const response = await authService.login(credentials);
+    setUser(response.user);
+    return response;
+  };
+
+  const signOut = async () => {
+    await authService.logout();
     setUser(null);
     navigate("/");
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signOut }}>
+    <AuthContext.Provider value={{ user, loading, login, signOut }}>
       {children}
     </AuthContext.Provider>
   );

@@ -28,14 +28,14 @@ export interface RegisterRequest {
   lastName: string;
   phoneNumber: string;
   role: string;
-  branchId: string;
+  branchId: number;
 }
 
 export interface AuthResponse {
-  token: string;
+  accessToken: string;
   refreshToken: string;
   user: User;
-  expiresIn: number;
+  expiresIn?: number;
 }
 
 // ==================== PATIENT TYPES ====================

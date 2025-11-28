@@ -47,7 +47,9 @@ const ReceptionQueue = () => {
       const response = await apiClient.get('/api/v1/consultants', {
         params: { isActive: true }
       });
-      if (response.data) setConsultants(response.data);
+      // API returns {success, data: {content: [...]}} or {success, data: [...]}
+      const consultantsData = response.data?.data?.content || response.data?.data || [];
+      setConsultants(Array.isArray(consultantsData) ? consultantsData : []);
     } catch (error) {
       console.error('Failed to fetch consultants:', error);
     }
@@ -154,6 +156,9 @@ const ReceptionQueue = () => {
   };
 
   const filteredAppointments = appointments.filter((apt) => {
+    // Safety check: ensure apt exists and has required properties
+    if (!apt || !apt.patient) return false;
+
     const matchesConsultant =
       selectedConsultant === "all" || apt.consultant_id === selectedConsultant;
     const matchesStatus = selectedStatus === "all" || apt.status === selectedStatus;
@@ -236,7 +241,7 @@ const ReceptionQueue = () => {
 
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-semibold text-lg">{apt.patient.full_name}</h3>
+                        <h3 className="font-semibold text-lg">{apt.patient?.full_name || 'Unknown Patient'}</h3>
                         {apt.is_emergency && (
                           <Badge variant="destructive" className="text-xs">
                             EMERGENCY
@@ -247,32 +252,32 @@ const ReceptionQueue = () => {
                       <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-sm">
                         <div>
                           <span className="text-muted-foreground">UHID:</span>
-                          <span className="ml-2 font-medium">{apt.patient.uhid}</span>
+                          <span className="ml-2 font-medium">{apt.patient?.uhid || 'N/A'}</span>
                         </div>
                         <div>
                           <span className="text-muted-foreground">Age:</span>
-                          <span className="ml-2 font-medium">{apt.patient.age}</span>
+                          <span className="ml-2 font-medium">{apt.patient?.age || 'N/A'}</span>
                         </div>
                         <div>
                           <span className="text-muted-foreground">Mobile:</span>
-                          <span className="ml-2 font-medium">{apt.patient.mobile}</span>
+                          <span className="ml-2 font-medium">{apt.patient?.mobile || 'N/A'}</span>
                         </div>
                         <div>
                           <span className="text-muted-foreground">Time:</span>
                           <span className="ml-2 font-medium">
-                            {new Date(`2000-01-01T${apt.appointment_time}`).toLocaleTimeString(
+                            {apt.appointment_time ? new Date(`2000-01-01T${apt.appointment_time}`).toLocaleTimeString(
                               "en-US",
                               {
                                 hour: "numeric",
                                 minute: "2-digit",
                                 hour12: true,
                               }
-                            )}
+                            ) : 'N/A'}
                           </span>
                         </div>
                         <div>
                           <span className="text-muted-foreground">Consultant:</span>
-                          <span className="ml-2 font-medium">{apt.consultant.name}</span>
+                          <span className="ml-2 font-medium">{apt.consultant?.name || 'Not Assigned'}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <Clock className="h-3 w-3 text-muted-foreground" />

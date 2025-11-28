@@ -45,33 +45,32 @@ export interface AppointmentResponse {
 export const appointmentService = {
   // Create new appointment
   createAppointment: async (appointment: AppointmentRequest): Promise<AppointmentResponse> => {
-    const response = await apiClient.post<AppointmentResponse>('/appointments', appointment);
+    const response = await apiClient.post<AppointmentResponse>(APPOINTMENT_API, appointment);
     return response.data;
   },
 
   // Get appointment by ID
   getAppointmentById: async (id: number): Promise<AppointmentResponse> => {
-    const response = await apiClient.get<AppointmentResponse>(`/appointments/${id}`);
+    const response = await apiClient.get<AppointmentResponse>(`${APPOINTMENT_API}/${id}`);
     return response.data;
   },
 
   // Get appointments by date
   getAppointmentsByDate: async (date: string): Promise<AppointmentResponse[]> => {
-    const response = await apiClient.get<AppointmentResponse[]>('/appointments/date', {
-      params: { date },
-    });
-    return response.data;
+    const response = await apiClient.get(`${APPOINTMENT_API}/date/${date}`);
+    // API returns {success, data: {content: [...]}}
+    return response.data?.data?.content || [];
   },
 
   // Get appointments by patient
   getAppointmentsByPatient: async (patientId: number): Promise<AppointmentResponse[]> => {
-    const response = await apiClient.get<AppointmentResponse[]>(`/appointments/patient/${patientId}`);
+    const response = await apiClient.get<AppointmentResponse[]>(`${APPOINTMENT_API}/patient/${patientId}`);
     return response.data;
   },
 
   // Update appointment status
   updateAppointmentStatus: async (id: number, status: string): Promise<AppointmentResponse> => {
-    const response = await apiClient.patch<AppointmentResponse>(`/appointments/${id}/status`, { status });
+    const response = await apiClient.patch<AppointmentResponse>(`${APPOINTMENT_API}/${id}/status`, { status });
     return response.data;
   },
 
