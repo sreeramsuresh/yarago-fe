@@ -482,7 +482,7 @@ export const masterDataService = {
     const response = await apiClient.get(DRUG_API, {
       params: { category, drugType, search, isActive }
     });
-    return response.data;
+    return response.data?.data || response.data || [];
   },
 
   /**
@@ -500,7 +500,7 @@ export const masterDataService = {
     const response = await apiClient.get(`${DRUG_API}/search`, {
       params: { query, category, limit }
     });
-    return response.data;
+    return response.data?.data || response.data || [];
   },
 
   /**
@@ -531,7 +531,7 @@ export const masterDataService = {
    */
   getDrugCategories: async (): Promise<string[]> => {
     const response = await apiClient.get(`${DRUG_API}/categories`);
-    return response.data;
+    return response.data?.data || response.data || [];
   },
 
   /**
@@ -541,7 +541,7 @@ export const masterDataService = {
     const response = await apiClient.get(`${DRUG_API}/common`, {
       params: { category, limit }
     });
-    return response.data;
+    return response.data?.data || response.data || [];
   },
 
   /**

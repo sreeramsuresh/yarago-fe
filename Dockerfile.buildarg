@@ -1,5 +1,9 @@
-# Multi-stage build for Yarago Hospital ERP Frontend
+# Multi-stage build for Yarago Hospital ERP Frontend with build-time configuration
 FROM node:20-alpine AS build
+
+# Build argument for API base URL
+ARG VITE_API_BASE_URL=http://gateway:8080
+ARG VITE_WS_URL=ws://gateway:8080/ws/notifications
 
 # Set working directory
 WORKDIR /app
@@ -13,8 +17,9 @@ RUN npm ci --legacy-peer-deps
 # Copy source code
 COPY . .
 
-# Copy Docker-specific environment file
-COPY .env.docker .env
+# Create .env file with build arguments
+RUN echo "VITE_API_BASE_URL=${VITE_API_BASE_URL}" > .env && \
+    echo "VITE_WS_URL=${VITE_WS_URL}" >> .env
 
 # Build the application
 RUN npm run build

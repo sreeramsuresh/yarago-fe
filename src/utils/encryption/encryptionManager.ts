@@ -27,7 +27,7 @@ export interface SessionInfo {
 class EncryptionManager {
   private sessionInfo: SessionInfo | null = null;
   private backendPublicKey: CryptoKey | null = null;
-  private readonly API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+  private readonly API_BASE_URL = process.env.REACT_APP_API_URL;
 
   /**
    * Initialize encryption (call this on app startup)

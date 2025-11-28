@@ -283,7 +283,7 @@ export const ipdService = {
     branchId?: string;
   }): Promise<Ward[]> => {
     const response = await apiClient.get(WARD_API, { params: filters });
-    return response.data;
+    return response.data?.data || response.data || [];
   },
 
   /**
@@ -344,7 +344,7 @@ export const ipdService = {
     isActive?: boolean;
   }): Promise<Bed[]> => {
     const response = await apiClient.get(BED_API, { params: filters });
-    return response.data;
+    return response.data?.data || response.data || [];
   },
 
   /**
@@ -433,7 +433,9 @@ export const ipdService = {
       ...(filters as any)
     });
     const response = await apiClient.get(`${ADMISSION_API}?${params}`);
-    return response.data;
+    // Handle wrapped API response {success, message, data}
+    const apiResponse = response.data?.data || response.data;
+    return apiResponse || { content: [], totalElements: 0, totalPages: 0, number: 0, size: size };
   },
 
   /**
@@ -457,7 +459,7 @@ export const ipdService = {
    */
   getPatientAdmissions: async (patientId: string): Promise<Admission[]> => {
     const response = await apiClient.get(`${ADMISSION_API}/patient/${patientId}`);
-    return response.data;
+    return response.data?.data || response.data || [];
   },
 
   /**
@@ -467,7 +469,7 @@ export const ipdService = {
     const response = await apiClient.get(`${ADMISSION_API}/active`, {
       params: { wardId }
     });
-    return response.data;
+    return response.data?.data || response.data || [];
   },
 
   /**
