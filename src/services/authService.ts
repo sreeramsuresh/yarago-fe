@@ -112,6 +112,69 @@ export const authService = {
       currentPassword,
       newPassword
     });
+  },
+
+  // ==================== USER MANAGEMENT (Admin only) ====================
+
+  /**
+   * Get all users (Admin only)
+   */
+  getUsers: async (): Promise<User[]> => {
+    const response = await apiClient.get(`${AUTH_API}/users`);
+    return response.data.data || response.data;
+  },
+
+  /**
+   * Get user by ID (Admin only)
+   */
+  getUserById: async (userId: string): Promise<User> => {
+    const response = await apiClient.get(`${AUTH_API}/users/${userId}`);
+    return response.data.data || response.data;
+  },
+
+  /**
+   * Create new user (Admin only)
+   */
+  createUser: async (userData: any): Promise<User> => {
+    const response = await apiClient.post(`${AUTH_API}/users`, userData);
+    return response.data.data || response.data;
+  },
+
+  /**
+   * Update user (Admin only)
+   */
+  updateUser: async (userId: string, userData: any): Promise<User> => {
+    const response = await apiClient.put(`${AUTH_API}/users/${userId}`, userData);
+    return response.data.data || response.data;
+  },
+
+  /**
+   * Toggle user active status (Admin only)
+   */
+  toggleUserStatus: async (userId: string, active: boolean): Promise<void> => {
+    await apiClient.patch(`${AUTH_API}/users/${userId}/status`, { active });
+  },
+
+  /**
+   * Reset user password (Admin only)
+   */
+  resetUserPassword: async (userId: string, newPassword: string): Promise<void> => {
+    await apiClient.post(`${AUTH_API}/users/${userId}/reset-password`, { newPassword });
+  },
+
+  /**
+   * Delete user (Admin only)
+   */
+  deleteUser: async (userId: string): Promise<void> => {
+    await apiClient.delete(`${AUTH_API}/users/${userId}`);
+  },
+
+  /**
+   * Get all roles
+   */
+  getRoles: async (): Promise<any[]> => {
+    const response = await apiClient.get(`${AUTH_API}/roles`);
+    return response.data.data || response.data;
   }
 };
 

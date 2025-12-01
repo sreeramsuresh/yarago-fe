@@ -16,6 +16,8 @@ import Admin from "./Admin";
 import PatientSearch from "./PatientSearch";
 import Analytics from "./Analytics";
 import IPD from "./IPD";
+import ProfileSettings from "./ProfileSettings";
+import UserManagement from "./UserManagement";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -77,6 +79,8 @@ const Dashboard = () => {
               <Route path="patient-search" element={<PatientSearch />} />
               <Route path="analytics" element={<Analytics />} />
               <Route path="ipd" element={<IPD />} />
+              <Route path="profile" element={<ProfileSettings />} />
+              <Route path="user-management" element={<UserManagement />} />
             </Routes>
           </main>
         </div>
